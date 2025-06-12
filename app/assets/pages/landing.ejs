@@ -1,0 +1,59 @@
+<div id="<%= __filename %>" class="main" style="display: none;">
+    <div class="center">
+        <div class="row">
+            <button class="full primary" action="launchGame()">
+                <div class="name">
+                    <span><%= lang('landing.playButton') %></span>
+                    <div class="bg">
+                        <svg xmlns="http://www.w3.org/2000/svg" version="1.2" viewBox="0 0 240 30" width="240"
+                            height="30">
+                            <path
+                                d="m10 0v10h-10v-10zm0 0v10h-10v-10zm10 0v10h-10v-10zm0 0v10h-10v-10zm210 10v10h-10v-10zm0 0v10h-10v-10zm-20 10v10h-10v-10zm0 0v10h-10v-10zm30-10v10h-10v-10zm0 0v10h-10v-10zm-60-10v10h-10v-10zm0 0v10h-10v-10zm-150 10v10h-10v-10zm0 0v10h-10v-10zm50 10v10h-10v-10zm0 0v10h-10v-10zm-10 0v10h-10v-10zm0 0v10h-10v-10z" />
+                        </svg>
+                    </div>
+                </div>
+                <div class="skin">
+                    <img draggable="false" avatar src="">
+                </div>
+                <div class="overlay button_overlay" launch_overlay style="display: none;">
+                    <div class="center">
+                        <div class="column" style="width: 100%; padding: 20px;">
+                            <div launch_text class="text"></div>
+                            <div class="progress_bar">
+                                <div launch_percentage class="progress" style="width: 0%;"></div>
+                                <div class="bg"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </button>
+            <div class="column">
+                <button action="openSettings()">
+                    <div class="name">
+                        <span><%= lang('landing.settingsButton') %></span>
+                        <div class="bg">
+                            <svg xmlns="http://www.w3.org/2000/svg" version="1.2" viewBox="0 0 240 30" width="240"
+                                height="30">
+                                <path
+                                    d="m10 20v10h-10v-10zm0 0v10h-10v-10zm10 0v10h-10v-10zm0 0v10h-10v-10zm210 0v10h-10v-10zm0 0v10h-10v-10zm-70 0v10h-10v-10zm0 0v10h-10v-10zm80 0v10h-10v-10zm0 0v10h-10v-10zm-30-20v10h-10v-10zm0 0v10h-10v-10zm-180 10v10h-10v-10zm0 0v10h-10v-10zm20-10v10h-10v-10zm0 0v10h-10v-10zm10 0v10h-10v-10zm0 0v10h-10v-10z" />
+                            </svg>
+                        </div>
+                    </div>
+                </button>
+                <button class="danger" action="disconnect()">
+                    <div class="name">
+                        <span><%= lang('landing.disconnectButton') %></span>
+                        <div class="bg">
+                            <svg xmlns="http://www.w3.org/2000/svg" version="1.2" viewBox="0 0 240 30" width="240"
+                                height="30">
+                                <path
+                                    d="m10 20v10h-10v-10zm0 0v10h-10v-10zm10 0v10h-10v-10zm0 0v10h-10v-10zm210 0v10h-10v-10zm0 0v10h-10v-10zm-70 0v10h-10v-10zm0 0v10h-10v-10zm80 0v10h-10v-10zm0 0v10h-10v-10zm-30-20v10h-10v-10zm0 0v10h-10v-10zm-180 10v10h-10v-10zm0 0v10h-10v-10zm20-10v10h-10v-10zm0 0v10h-10v-10zm10 0v10h-10v-10zm0 0v10h-10v-10z" />
+                            </svg>
+                        </div>
+                    </div>
+                </button>
+            </div>
+        </div>
+    </div>
+    <script src="assets/js/scripts/pages/landing.js"></script>
+</div>
