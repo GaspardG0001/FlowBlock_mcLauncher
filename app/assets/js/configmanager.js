@@ -10,7 +10,7 @@ const sysRoot = process.env.APPDATA || (process.platform == 'darwin' ? process.e
 const dataPath = path.join(sysRoot, '.mcflowblock')
 
 const launcherDir = require('@electron/remote').app.getPath('userData')
-
+console.log(launcherDir)
 /**
  * Retrieve the absolute path of the launcher directory.
  * 

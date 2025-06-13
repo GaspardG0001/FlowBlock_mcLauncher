@@ -165,6 +165,8 @@ ipcMain.on(MSFT_OPCODE.OPEN_LOGIN, (ipcEvent, ...arguments_) => {
     msftAuthWindow.loadURL(`https://login.microsoftonline.com/consumers/oauth2/v2.0/authorize?prompt=select_account&client_id=${AZURE_CLIENT_ID}&response_type=code&scope=XboxLive.signin%20offline_access&redirect_uri=https://login.microsoftonline.com/common/oauth2/nativeclient`)
 })
 
+// On force le logout en supprimant directement l'uuid de la db plutôt que d'utiliser le logout foireux de Microsoft
+/*
 // Microsoft Auth Logout
 let msftLogoutWindow
 let msftLogoutSuccess
@@ -219,16 +221,21 @@ ipcMain.on(MSFT_OPCODE.OPEN_LOGOUT, (ipcEvent, uuid, isLastAccount) => {
     msftLogoutWindow.removeMenu()
     msftLogoutWindow.loadURL('https://login.microsoftonline.com/common/oauth2/v2.0/logout')
 })
+*/
+
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let win
 
 function createWindow() {
-
+    let width = 1150
+    let height = 700
     win = new BrowserWindow({
-        width: 980,
-        height: 552,
+        width: width,
+        height: height,
+        minWidth: width,
+        minHeight: height,
         icon: getPlatformIcon('SealCircle'),
         frame: false,
         webPreferences: {
@@ -240,8 +247,24 @@ function createWindow() {
     })
     remoteMain.enable(win.webContents)
 
+    let bgList = fs.readdirSync(path.join(__dirname, 'app', 'assets', 'images', 'backgrounds'))
+    let pageList = fs.readdirSync(path.join(__dirname, 'app', 'assets', 'pages')).filter(x=>!x.startsWith('_')&&x.endsWith('.ejs'))
+    let settingsList = fs.readdirSync(path.join(__dirname, 'app', 'assets', 'pages', 'settings')).sort((a,b) => {return parseInt(a.split('.')[0])-parseInt(b.split('.')[0])}).filter(x=>!x.startsWith('_')&&x.endsWith('.ejs'))
+
+    cssList = pageList.map(file=>{
+        let cssFile = file.split('.')
+        cssFile[cssFile.length-1] = 'css'
+        cssFile = cssFile.join('.')
+        return cssFile
+    }).filter(file=>{
+        return fs.existsSync(path.join(__dirname, 'app', 'assets', 'css', 'pages', file))
+    })
     const data = {
-        bkid: Math.floor((Math.random() * fs.readdirSync(path.join(__dirname, 'app', 'assets', 'images', 'backgrounds')).length)),
+        bkid: bgList[Math.floor(Math.random() * bgList.length)],
+        bgList: bgList,
+        pageList: pageList,
+        settingsList: settingsList,
+        cssList: cssList,
         lang: (str, placeHolders) => LangLoader.queryEJS(str, placeHolders)
     }
     Object.entries(data).forEach(([key, val]) => ejse.data(key, val))
@@ -262,7 +285,6 @@ function createWindow() {
 }
 
 function createMenu() {
-    
     if(process.platform === 'darwin') {
 
         // Extend default included application menu to continue support for quit keyboard shortcut
