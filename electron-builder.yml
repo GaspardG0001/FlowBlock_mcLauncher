@@ -1,6 +1,6 @@
 appId: 'mcflowblock'
 productName: 'FlowBlock_mc'
-artifactName: '${productName}-setup-${version}.${ext}'
+artifactName: '${productName}-setup.${ext}'
 
 copyright: 'Copyright © 2025 FlowBlock_mc'
 
@@ -33,7 +33,7 @@ mac:
       arch:
         - 'x64'
         - 'arm64'
-  artifactName: '${productName}-setup-${version}-${arch}.${ext}'
+  artifactName: '${productName}-setup.${ext}'
   category: 'public.app-category.games'
 
 # Linux Configuration
