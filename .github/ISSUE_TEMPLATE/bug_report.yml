@@ -1,0 +1,54 @@
+name: Bug Report
+description: Something isn't working quite right in the software.
+labels: ["bug", "not confirmed"]
+body:
+  - type: dropdown
+    id: place
+    attributes:
+      label: In which area do you see the problem?
+      description: Please select the zone in which you see the problem.
+      options:
+        - Loading screen
+        - Login page
+        - Home Page
+        - Settings
+        - Starting game
+        - Other
+
+  - type: dropdown
+    id: type
+    attributes:
+      label: What type of bugs do you encounter?
+      description: Please select the type of bug you are encountering.
+      options:
+        - Incorrect/unexpected behavior
+        - Application crash
+        - Software slowness/lack of response
+        - Other
+
+  - type: textarea
+    id: current_situation
+    attributes:
+      label: Describe the current situation
+      description: Please describe the current situation in detail.
+
+  - type: textarea
+    id: expected_situation
+    attributes:
+      label: Describe the expected situation
+      description: Please describe the expected situation in detail.
+
+  - type: textarea
+    id: steps_to_reproduce
+    attributes:
+      label: Steps to reproduce the bug
+      description: Please describe the steps to reproduce the bug.
+
+  - type: checkboxes
+    id: existing_issue
+    attributes:
+      label: Is there an existing issue for this?
+      description: Please [search here](https://github.com/GaspardG0001/FlowBlock_mcLauncher/issues) to see if an issue already exists for your problem.
+      options:
+        - label: I have searched the existing issues before opening this issue.
+          required: true
