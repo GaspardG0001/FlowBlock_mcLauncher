@@ -348,6 +348,7 @@ async function dlAsync(login = true) {
     if(login) {
         if(ConfigManager.getSelectedAccount() == null) {
             loggerLanding.error('You must be logged into an account.')
+            switchView(getCurrentView(), VIEWS.login)
             return;
         }
     }
@@ -508,6 +509,7 @@ async function dlAsync(login = true) {
 }
 
 async function launchGame() {
+
     let launchButtons = document.querySelectorAll('[action]')
     let buttons = []
     for(let button of launchButtons) {
