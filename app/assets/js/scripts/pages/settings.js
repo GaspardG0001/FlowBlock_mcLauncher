@@ -190,3 +190,33 @@ async function openLauncherRepositoryDialog() {
 async function prepareSettings() {
     await initSettingsValues(true)
 }
+
+/**
+ * Fetches the GitHub atom release feed and parses it for the release notes
+ * of the current version. This value is displayed on the UI.
+ */
+function populateReleaseNotes(){
+    $.ajax({
+        url: 'https://github.com/GaspardG0001/FlowBlock_mcLauncher/releases.atom',
+        success: (data) => {
+            const version = 'v' + remote.app.getVersion()
+            const entries = $(data).find('entry')
+            
+            for(let i=0; i<entries.length; i++){
+                const entry = $(entries[i])
+                let id = entry.find('id').text()
+                id = id.substring(id.lastIndexOf('/')+1)
+
+                if(id === version){
+                    settingsAboutChangelogTitle.innerHTML = entry.find('title').text()
+                    settingsAboutChangelogText.innerHTML = entry.find('content').text()
+                    settingsAboutChangelogButton.href = entry.find('link').attr('href')
+                }
+            }
+
+        },
+        timeout: 2500
+    }).catch(err => {
+        settingsAboutChangelogText.innerHTML = Lang.queryJS('settings.about.releaseNotesFailed')
+    })
+}

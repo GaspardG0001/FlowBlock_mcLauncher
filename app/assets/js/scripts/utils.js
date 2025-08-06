@@ -3,6 +3,7 @@ function openSettings() {
         let realId = currentSettingsView.replace('#','')
         document.getElementById('nav'+realId).setAttribute('selected', true)
         document.getElementById(realId).style=""
+        populateReleaseNotes()
     })
 }
 function closeSettings() {

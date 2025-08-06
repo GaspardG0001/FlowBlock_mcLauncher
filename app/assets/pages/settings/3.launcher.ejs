@@ -14,6 +14,15 @@
                 <div class="check"></div>
             </div>
         </div>
+        <div class="column_setting">    
+            <div class="name"><%= lang('settings.updateReleaseNotes') %></div>
+
+            <div class="name" id="settingsAboutChangelogTitle"><%- lang('settings.changelog') %></div>
+            <div class="changelog" id="settingsAboutChangelogText"><%- lang('settings.noReleaseNotes') %></div>
+            <a id="settingsAboutChangelogButton" class="changelog-link" target="_blank">
+                <%- lang('settings.viewReleaseNotes') %>
+            </a>
+        </div>
         <div class="column_setting">
             <div class="name"><%= lang('settings.dataDirectoryTitle') %></div>
             <div class="row_united">
