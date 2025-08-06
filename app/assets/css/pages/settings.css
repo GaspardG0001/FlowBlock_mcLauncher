@@ -35,6 +35,7 @@
     box-shadow: 0 12px 0 0 var(--darkColor);
     width: 100%;
     transition-duration: 0.3s;
+    z-index: 1000;
 }
 #settings > .top > .buttons > button:active {
     transform: none;
@@ -96,4 +97,23 @@ button > .name > .splitbg > svg {
     right: 0;
     width: max-content;
     height: max-content;
+}
+
+.changelog-container {
+    background-color: var(--dark3Color);
+    padding: 20px;
+    box-shadow: 0 12px 0 0 var(--darkColor);
+}
+
+.changelog-container a {
+    color: #ffffff;
+}
+
+.changelog-container h2 {
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.changelog-container p {
+    font-size: 14px;
 }
