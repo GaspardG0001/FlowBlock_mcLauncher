@@ -1,7 +1,9 @@
 <div id="<%= 'settings_'+__filename %>" class="container" style="display: none;">
     <div class="column" style="padding-bottom: 8px;">
         <div class="row_setting">
-            <div class="name"><%= lang('settings.allowPrereleaseTitle') %></div>
+            <div class="name">
+                <%= lang('settings.allowPrereleaseTitle') %>
+            </div>
             <div class="toggle" settingValue="AllowPrerelease">
                 <div class="bg">
                     <div class="bgbox">
@@ -14,8 +16,53 @@
                 <div class="check"></div>
             </div>
         </div>
-        <div class="column_setting">    
-            <div class="name"><%= lang('settings.updateReleaseNotes') %></div>
+
+        <div id="settingsTabUpdate" class="settingsTab">
+            <div class="settingsTabHeader">
+                <span class="settingsTabHeaderText"><%- lang('settings.launcherUpdatesHeaderText') %></span>
+            </div>
+            <div id="settingsUpdateStatusContainer">
+                <div id="settingsUpdateStatusContent">
+                    <div id="settingsUpdateStatusHeadline">
+                        <span id="settingsUpdateTitle"><!-- You Are Running the Latest Version --></span>
+                    </div>
+                    <hr>
+                    <div id="settingsUpdateVersion">
+                        <div id="settingsUpdateVersionCheck">&#10003;</div>
+                        <div id="settingsUpdateVersionDetails">
+                            <span id="settingsUpdateVersionTitle"><%- lang('settings.stableRelease') %></span>
+                            <div id="settingsUpdateVersionLine">
+                                <span id="settingsUpdateVersionText"><%- lang('settings.versionText') %> </span>
+                                <span id="settingsUpdateVersionValue">0.0.1-alpha.18</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="settingsUpdateActionContainer">
+                        <button id="settingsUpdateActionButton"><%- lang('settings.checkForUpdates') %></button>
+                    </div>
+                </div>
+            </div>
+
+        <div class="column_setting">
+            <div class="name">
+                <%= lang('settings.dataDirectoryTitle') %>
+            </div>
+            <div class="row_united">
+                <input serverDependent settingValue="DataDirectory" disabled type="text">
+                <button action="openLauncherRepositoryDialog()">
+                    <div class="name">
+                        <span>
+                            <%= lang('settings.chooseFolder') %>
+                        </span>
+                    </div>
+                </button>
+            </div>
+        </div>
+
+        <div class="column_setting">
+            <div class="name">
+                <%= lang('settings.updateReleaseNotes') %>
+            </div>
 
             <div class="changelog-container">
                 <div class="name" id="settingsAboutChangelogTitle"><%- lang('settings.changelog') %></div>
@@ -26,16 +73,6 @@
                 </a>
             </div>
         </div>
-        <div class="column_setting">
-            <div class="name"><%= lang('settings.dataDirectoryTitle') %></div>
-            <div class="row_united">
-                <input serverDependent settingValue="DataDirectory" disabled type="text">
-                <button action="openLauncherRepositoryDialog()">
-                    <div class="name">
-                        <span><%= lang('settings.chooseFolder') %></span>
-                    </div>
-                </button>
-            </div>
-        </div>
+
     </div>
 </div>

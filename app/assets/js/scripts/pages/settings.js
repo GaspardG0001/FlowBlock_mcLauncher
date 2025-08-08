@@ -220,3 +220,89 @@ function populateReleaseNotes(){
         settingsAboutChangelogText.innerHTML = Lang.queryJS('settings.about.releaseNotesFailed')
     })
 }
+
+/**
+ * Utility method to display version information on the
+ * About and Update settings tabs.
+ * 
+ * @param {string} version The semver version to display.
+ * @param {Element} valueElement The value element.
+ * @param {Element} titleElement The title element.
+ * @param {Element} checkElement The check mark element.
+ */
+function populateVersionInformation(version, valueElement, titleElement, checkElement){
+    valueElement.innerHTML = version
+    if(isPrerelease(version)){
+        titleElement.innerHTML = Lang.queryJS('settings.about.preReleaseTitle')
+        titleElement.style.color = '#ff886d'
+        checkElement.style.background = '#ff886d'
+    } else {
+        titleElement.innerHTML = Lang.queryJS('settings.about.stableReleaseTitle')
+        titleElement.style.color = null
+        checkElement.style.background = null
+    }
+}
+
+/**
+ * Return whether or not the provided version is a prerelease.
+ * 
+ * @param {string} version The semver version to test.
+ * @returns {boolean} True if the version is a prerelease, otherwise false.
+ */
+function isPrerelease(version){
+    const preRelComp = semver.prerelease(version)
+    return preRelComp != null && preRelComp.length > 0
+}
+
+/**
+ * Update the properties of the update action button.
+ * 
+ * @param {string} text The new button text.
+ * @param {boolean} disabled Optional. Disable or enable the button
+ * @param {function} handler Optional. New button event handler.
+ */
+function settingsUpdateButtonStatus(text, disabled = false, handler = null){
+    settingsUpdateActionButton.innerHTML = text
+    settingsUpdateActionButton.disabled = disabled
+    if(handler != null){
+        settingsUpdateActionButton.onclick = handler
+    }
+}
+
+/**
+ * Populate the update tab with relevant information.
+ * 
+ * @param {Object} data The update data.
+ */
+function populateSettingsUpdateInformation(data){
+    if(data != null){
+        settingsUpdateTitle.innerHTML = isPrerelease(data.version) ? Lang.queryJS('settings.updates.newPreReleaseTitle') : Lang.queryJS('settings.updates.newReleaseTitle')
+        populateVersionInformation(data.version, settingsUpdateVersionValue, settingsUpdateVersionTitle, settingsUpdateVersionCheck)
+        
+        if(process.platform === 'darwin'){
+            settingsUpdateButtonStatus(Lang.queryJS('settings.updates.downloadButton'), false, () => {
+                shell.openExternal(data.darwindownload)
+            })
+        } else {
+            settingsUpdateButtonStatus(Lang.queryJS('settings.updates.downloadingButton'), true)
+        }
+    } else {
+        settingsUpdateTitle.innerHTML = Lang.queryJS('settings.updates.latestVersionTitle')
+        populateVersionInformation(remote.app.getVersion(), settingsUpdateVersionValue, settingsUpdateVersionTitle, settingsUpdateVersionCheck)
+        settingsUpdateButtonStatus(Lang.queryJS('settings.updates.checkForUpdatesButton'), false, () => {
+            if(!isDev){
+                ipcRenderer.send('autoUpdateAction', 'checkForUpdate')
+                settingsUpdateButtonStatus(Lang.queryJS('settings.updates.checkingForUpdatesButton'), true)
+            }
+        })
+    }
+}
+
+/**
+ * Prepare update tab for display.
+ * 
+ * @param {Object} data The update data.
+ */
+function prepareUpdateTab(data = null){
+    populateSettingsUpdateInformation(data)
+}

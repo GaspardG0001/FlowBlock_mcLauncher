@@ -99,7 +99,8 @@ button > .name > .splitbg > svg {
     height: max-content;
 }
 
-.changelog-container {
+.changelog-container,
+#settingsUpdateStatusContainer {
     background-color: var(--dark3Color);
     padding: 20px;
     box-shadow: 0 12px 0 0 var(--darkColor);
@@ -116,4 +117,10 @@ button > .name > .splitbg > svg {
 
 .changelog-container p {
     font-size: 14px;
+}
+
+#settingsUpdateVersion {
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }

@@ -4,6 +4,7 @@ function openSettings() {
         document.getElementById('nav'+realId).setAttribute('selected', true)
         document.getElementById(realId).style=""
         populateReleaseNotes()
+        prepareUpdateTab()
     })
 }
 function closeSettings() {
