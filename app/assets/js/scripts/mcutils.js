@@ -573,9 +573,20 @@ async function validateSelectedAccount() {
 }
 
 function disconnect() {
-    switchView(getCurrentView(), VIEWS.login, 500, 500, async () => {
-        await AuthManager.removeMicrosoftAccount(ConfigManager.getSelectedAccount().uuid)
-    })
+    const acc = ConfigManager.getSelectedAccount()
+    if(!acc) {
+        switchView(getCurrentView(), VIEWS.login, 500, 500)
+        return
+    }
+    if(acc.type === 'microsoft') {
+        const isLast = Object.keys(ConfigManager.getAuthAccounts()).length === 1
+        ipcRenderer.send(MSFT_OPCODE.OPEN_LOGOUT, acc.uuid, isLast)
+        // La vue finale sera gérée dans le listener REPLY_LOGOUT.
+    } else {
+        switchView(getCurrentView(), VIEWS.login, 500, 500, async () => {
+            await AuthManager.removeMojangAccount(acc.uuid)
+        })
+    }
 }
 
 ipcRenderer.on(MSFT_OPCODE.REPLY_LOGOUT, (_, ...arguments_) => {
