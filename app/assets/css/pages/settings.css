@@ -53,7 +53,7 @@ button > .name > .splitbg {
 button > .name > .splitbg > svg {
     position: absolute;
     fill: var(--darkColor);
-}
+}  
 
 #settings > .top > .buttons > button > .name > span {
     text-shadow: 0 4px 0 #0D0C0A;
@@ -115,7 +115,7 @@ button > .name > .splitbg > svg {
     font-weight: 700;
 }
 
-.changelog-container p {
+.changelog-container p{
     font-size: 14px;
 }
 
@@ -123,4 +123,10 @@ button > .name > .splitbg > svg {
     display: flex;
     align-items: center;
     gap: 10px;
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
+#settingsUpdateActionButton > .name > span {
+    font-size: 16px !important;
 }

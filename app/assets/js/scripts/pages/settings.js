@@ -261,13 +261,30 @@ function isPrerelease(version){
  * @param {boolean} disabled Optional. Disable or enable the button
  * @param {function} handler Optional. New button event handler.
  */
+// Update the update button without nuking its inner structure
 function settingsUpdateButtonStatus(text, disabled = false, handler = null){
-    settingsUpdateActionButton.innerHTML = text
-    settingsUpdateActionButton.disabled = disabled
-    if(handler != null){
-        settingsUpdateActionButton.onclick = handler
-    }
+  const btn = settingsUpdateActionButton;
+
+  // Ensure expected markup exists: <div class="name"><span></span></div>
+  let span = btn.querySelector('.name > span');
+  if(!span){
+    // Rebuild expected structure if it was wiped previously
+    btn.innerHTML = '<div class="name"><span></span></div>';
+    span = btn.querySelector('.name > span');
+  }
+
+  // Set label safely (no HTML injection)
+  span.textContent = text; // keep structure so CSS for .name > span applies
+
+  // Disabled + accessibility
+  btn.disabled = !!disabled;
+  btn.setAttribute('aria-disabled', btn.disabled ? 'true' : 'false');
+
+  // Replace click handler (clear previous one if none provided)
+  // Using onclick here to match your original pattern
+  btn.onclick = handler ? handler : null;
 }
+
 
 /**
  * Populate the update tab with relevant information.

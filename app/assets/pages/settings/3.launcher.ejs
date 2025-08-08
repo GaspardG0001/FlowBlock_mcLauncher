@@ -17,62 +17,67 @@
             </div>
         </div>
 
-        <div id="settingsTabUpdate" class="settingsTab">
-            <div class="settingsTabHeader">
-                <span class="settingsTabHeaderText"><%- lang('settings.launcherUpdatesHeaderText') %></span>
-            </div>
-            <div id="settingsUpdateStatusContainer">
-                <div id="settingsUpdateStatusContent">
-                    <div id="settingsUpdateStatusHeadline">
-                        <span id="settingsUpdateTitle"><!-- You Are Running the Latest Version --></span>
-                    </div>
-                    <hr>
-                    <div id="settingsUpdateVersion">
-                        <div id="settingsUpdateVersionCheck">&#10003;</div>
-                        <div id="settingsUpdateVersionDetails">
-                            <span id="settingsUpdateVersionTitle"><%- lang('settings.stableRelease') %></span>
-                            <div id="settingsUpdateVersionLine">
-                                <span id="settingsUpdateVersionText"><%- lang('settings.versionText') %> </span>
-                                <span id="settingsUpdateVersionValue">0.0.1-alpha.18</span>
+        <div class="column_setting">
+                <div class="settingsTabHeader">
+                    <span class="settingsTabHeaderText"><%- lang('settings.launcherUpdatesHeaderText') %></span>
+                </div>
+                <div id="settingsUpdateStatusContainer">
+                    <div id="settingsUpdateStatusContent">
+                        <div id="settingsUpdateStatusHeadline">
+                            <span id="settingsUpdateTitle"><!-- You Are Running the Latest Version --></span>
+                        </div>
+                        <hr>
+                        <div id="settingsUpdateVersion">
+                            <div id="settingsUpdateVersionCheck">&#10003;</div>
+                            <div id="settingsUpdateVersionDetails">
+                                <span id="settingsUpdateVersionTitle"><%- lang('settings.stableRelease') %></span>
+                                <div id="settingsUpdateVersionLine">
+                                    <span id="settingsUpdateVersionText"><%- lang('settings.versionText') %> </span>
+                                    <span id="settingsUpdateVersionValue">0.0.1-alpha.18</span>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div id="settingsUpdateActionContainer">
-                        <button id="settingsUpdateActionButton"><%- lang('settings.checkForUpdates') %></button>
-                    </div>
+                        <div id="settingsUpdateActionContainer">
+                            <button id="settingsUpdateActionButton">
+                                <div class="name">
+                                    <span><%- lang('settings.checkForUpdates') %></span>
+                                </div>
+                            </button>
+                        </div>
+                </div>
+            </div>
+        </div>
+
+            <div class="column_setting">
+                <div class="name">
+                    <%= lang('settings.dataDirectoryTitle') %>
+                </div>
+                <div class="row_united">
+                    <input serverDependent settingValue="DataDirectory" disabled type="text">
+                    <button action="openLauncherRepositoryDialog()">
+                        <div class="name">
+                            <span>
+                                <%= lang('settings.chooseFolder') %>
+                            </span>
+                        </div>
+                    </button>
                 </div>
             </div>
 
-        <div class="column_setting">
-            <div class="name">
-                <%= lang('settings.dataDirectoryTitle') %>
+            <div class="column_setting">
+                <div class="name">
+                    <%= lang('settings.updateReleaseNotes') %>
+                </div>
+
+                <div class="changelog-container">
+                    <div class="name" id="settingsAboutChangelogTitle"><%- lang('settings.changelog') %></div>
+                    <hr>
+                    <div class="changelog" id="settingsAboutChangelogText"><%- lang('settings.noReleaseNotes') %></div>
+                    <a id="settingsAboutChangelogButton" class="changelog-link" target="_blank">
+                        <%- lang('settings.viewReleaseNotes') %>
+                    </a>
+                </div>
             </div>
-            <div class="row_united">
-                <input serverDependent settingValue="DataDirectory" disabled type="text">
-                <button action="openLauncherRepositoryDialog()">
-                    <div class="name">
-                        <span>
-                            <%= lang('settings.chooseFolder') %>
-                        </span>
-                    </div>
-                </button>
-            </div>
+
         </div>
-
-        <div class="column_setting">
-            <div class="name">
-                <%= lang('settings.updateReleaseNotes') %>
-            </div>
-
-            <div class="changelog-container">
-                <div class="name" id="settingsAboutChangelogTitle"><%- lang('settings.changelog') %></div>
-                <hr>
-                <div class="changelog" id="settingsAboutChangelogText"><%- lang('settings.noReleaseNotes') %></div>
-                <a id="settingsAboutChangelogButton" class="changelog-link" target="_blank">
-                    <%- lang('settings.viewReleaseNotes') %>
-                </a>
-            </div>
-        </div>
-
     </div>
-</div>
