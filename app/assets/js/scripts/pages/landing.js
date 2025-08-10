@@ -61,6 +61,15 @@ updateSelectedAccount(ConfigManager.getSelectedAccount());
     link: '#statusLink'
   };
 
+  // i18n helpers: Lang.queryJS('landing.…') + fallback
+  const t = (key, fallback = '') =>
+    (window.Lang && typeof Lang.queryJS === 'function')
+      ? (Lang.queryJS(key) || fallback || key)
+      : (fallback || key);
+
+  const plural = (n, oneKey, manyKey, fallbackOne, fallbackMany) =>
+    n === 1 ? t(oneKey, fallbackOne) : t(manyKey, fallbackMany);
+
   // Map incident.io impact/status to our UI states
   const impactToState = (impact) => {
     switch (impact) {
@@ -71,9 +80,39 @@ updateSelectedAccount(ConfigManager.getSelectedAccount());
     }
   };
 
+  // Group helpers: build one chip per component group with the group's worst state.
+const STATE_ORDER = { down: 3, partial: 2, degraded: 1, ok: 0 };
+const STRICT_GROUPS_ONLY = false; // true = ignore components without group_name
+
+function groupWorstStates(components = []) {
+  const map = new Map(); // group_name -> worst state
+  for (const c of components) {
+    const group = c.group_name || (STRICT_GROUPS_ONLY ? null : c.name);
+    if (!group) continue;
+    const state = impactToState(c.current_status);
+    const prev = map.get(group) || 'ok';
+    if (STATE_ORDER[state] > STATE_ORDER[prev]) map.set(group, state);
+  }
+  return map;
+}
+
+function makeGroupChips(components = []) {
+  const chips = [];
+  const groups = groupWorstStates(components);
+  for (const [group, state] of groups) chips.push(makeChip(group, state));
+  return chips;
+}
+
+  // Localized impact label for chips
+  const impactLabel = (impact) => ({
+    full_outage: t(Lang.queryJS('landing.status.impact.fullOutage', 'full outage')),
+    partial_outage: t(Lang.queryJS('landing.status.impact.partialOutage', 'partial outage')),
+    degraded_performance: t(Lang.queryJS('landing.status.impact.degradedPerformance', 'degraded performance'))
+  }[impact] || (impact ? impact.replace('_', ' ') : ''));
+
   // Pick the "worst" impact among incidents
   const worstImpact = (incidents) => {
-    let order = { down: 3, partial: 2, degraded: 1, ok: 0 };
+    const order = { down: 3, partial: 2, degraded: 1, ok: 0 };
     let worst = 'ok';
     for (const inc of (incidents || [])) {
       const st = impactToState(inc.current_worst_impact);
@@ -90,22 +129,25 @@ updateSelectedAccount(ConfigManager.getSelectedAccount());
     return 'ok';
   };
 
-  // Small "time ago" helper in local timezone
+  // Localized "time ago"
   const timeAgo = (iso) => {
     try {
       const d = new Date(iso);
       const diffMs = Date.now() - d.getTime();
       const mins = Math.round(diffMs / 60000);
-      if (mins < 1) return 'just now';
-      if (mins < 60) return `${mins} min ago`;
+
+      if (mins < 1) return t(Lang.queryJS('landing.status.time.justNow', 'just now'));
+      if (mins < 60) return `${mins} ${t(Lang.queryJS('landing.status.time.minSuffix', 'min'))} ${t(Lang.queryJS('landing.status.updatedSuffix', 'ago'))}`.trim();
+
       const hours = Math.round(mins / 60);
-      if (hours < 24) return `${hours} h ago`;
+      if (hours < 24) return `${hours} ${t(Lang.queryJS('landing.status.time.hourSuffix', 'h'))} ${t(Lang.queryJS('landing.status.updatedSuffix', 'ago'))}`.trim();
+
       const days = Math.round(hours / 24);
-      return `${days} d ago`;
+      return `${days} ${t(Lang.queryJS('landing.status.time.daySuffix', 'd'))} ${t(Lang.queryJS('landing.status.updatedSuffix', 'ago'))}`.trim();
     } catch { return ''; }
   };
 
-  const clear = (el) => { while (el.firstChild) el.removeChild(el.firstChild); };
+  const clear = (el) => { while (el && el.firstChild) el.removeChild(el.firstChild); };
 
   const makeChip = (label, state) => {
     const span = document.createElement('span');
@@ -138,19 +180,16 @@ updateSelectedAccount(ConfigManager.getSelectedAccount());
 
     if (link) {
       item.style.cursor = 'pointer';
-      item.addEventListener('click', () => {
-        // Open the incident page in the system browser (Electron will handle target=_blank)
-        window.open(link, '_blank');
-      });
+      item.addEventListener('click', () => window.open(link, '_blank'));
     }
     return item;
   };
 
   const render = (data) => {
-    const dot = document.querySelector(SELECTORS.dot);
+    const dot   = document.querySelector(SELECTORS.dot);
     const title = document.querySelector(SELECTORS.title);
-    const body = document.querySelector(SELECTORS.body);
-    const link = document.querySelector(SELECTORS.link);
+    const body  = document.querySelector(SELECTORS.body);
+    const link  = document.querySelector(SELECTORS.link);
     if (!dot || !title || !body) return;
 
     // Overall state + header
@@ -164,33 +203,46 @@ updateSelectedAccount(ConfigManager.getSelectedAccount());
     };
 
     const stateText = {
-      ok: 'All systems operational',
-      degraded: 'Degraded performance',
-      partial: 'Partial outage',
-      down: 'Major outage',
-      maintenance: 'Maintenance in progress'
-    }[state] || 'Status';
+      ok:          t(Lang.queryJS('landing.status.state.ok', 'All systems operational')),
+      degraded:    t(Lang.queryJS('landing.status.state.degraded', 'Degraded performance')),
+      partial:     t(Lang.queryJS('landing.status.state.partial', 'Partial outage')),
+      down:        t(Lang.queryJS('landing.status.state.down', 'Major outage')),
+      maintenance: t(Lang.queryJS('landing.status.state.maintenance', 'Maintenance in progress'))
+    }[state] || t(Lang.queryJS('landing.status.state.default', 'Status'));
 
-    title.textContent = `${stateText}${counts.incidents ? ` · ${counts.incidents} incident${counts.incidents>1?'s':''}` : ''}${counts.maintNow ? ` · ${counts.maintNow} maintenance` : ''}`;
+    let header = stateText;
+    if (counts.incidents) {
+      header += ` · ${counts.incidents} ${plural(counts.incidents,
+        Lang.queryJS('landing.status.incident.one', 'incident'), Lang.queryJS('landing.status.incident.many', 'incidents'))}`;
+    }
+    if (counts.maintNow) {
+      header += ` · ${counts.maintNow} ${plural(counts.maintNow,
+        Lang.queryJS('landing.status.maintenance.one', 'maintenance'), Lang.queryJS('landing.status.maintenance.many', 'maintenances'))}`;
+    }
+    title.textContent = header;
 
-    if (link) link.href = data.page_url || 'https://status.mcflowblock.com/';
+    if (link) {
+      link.href = data.page_url || 'https://status.mcflowblock.com/';
+      link.textContent = t(Lang.queryJS('landing.status.seeFullStatus', 'See full status'));
+    }
 
     // Body lists
     clear(body);
 
     // Ongoing incidents
     for (const inc of (data.ongoing_incidents || [])) {
-      const chips = [];
-      const impactState = impactToState(inc.current_worst_impact);
-      chips.push(makeChip(inc.current_worst_impact.replace('_',' '), impactState));
-      if (Array.isArray(inc.affected_components)) {
-        for (const comp of inc.affected_components) {
-          const compState = impactToState(comp.current_status);
-          const label = comp.group_name ? `${comp.group_name} / ${comp.name}` : comp.name;
-          chips.push(makeChip(label, compState));
-        }
-      }
-      const meta = `${inc.status} • updated ${timeAgo(inc.last_update_at)}`;
+const chips = Array.isArray(inc.affected_components)
+  ? makeGroupChips(inc.affected_components)
+  : [];
+
+
+      const statusLabel = ({
+        identified:   t(Lang.queryJS('landing.status.incidentStatus.identified', 'identified')),
+        investigating:t(Lang.queryJS('landing.status.incidentStatus.investigating', 'investigating')),
+        monitoring:   t(Lang.queryJS('landing.status.incidentStatus.monitoring', 'monitoring'))
+      }[inc.status] || inc.status);
+
+      const meta = `${statusLabel} • ${t(Lang.queryJS('landing.status.updated', 'updated'))} ${timeAgo(inc.last_update_at)}`;
       body.appendChild(renderListItem(inc.name, meta, chips, inc.url));
     }
 
@@ -199,24 +251,31 @@ updateSelectedAccount(ConfigManager.getSelectedAccount());
       const chips = [];
       if (Array.isArray(m.affected_components)) {
         for (const comp of m.affected_components) {
-          const compState = impactToState(comp.current_status);
-          const label = comp.group_name ? `${comp.group_name} / ${comp.name}` : comp.name;
-          chips.push(makeChip(label, compState));
+            if (!chips.find(c => c.textContent === comp.group_name)) {
+                const compState = impactToState(comp.current_status);
+                const label = comp.group_name ? `${comp.group_name}` : comp.name;
+                chips.push(makeChip(label, compState));
+            }
         }
       }
-      const meta = `in progress • started ${timeAgo(m.started_at)} • ends ${new Date(m.scheduled_end_at).toLocaleString()}`;
+      const meta = `${t(Lang.queryJS('landing.status.inProgress', 'in progress'))} • ${t(Lang.queryJS('landing.status.started', 'started'))} ${timeAgo(m.started_at)} • ${t(Lang.queryJS('landing.status.ends', 'ends'))} ${new Date(m.scheduled_end_at).toLocaleString()}`;
       body.appendChild(renderListItem(m.name, meta, chips, m.url));
     }
 
     // Scheduled maintenances
     for (const s of (data.scheduled_maintenances || [])) {
-      const meta = `scheduled • ${new Date(s.starts_at).toLocaleString()} → ${new Date(s.ends_at).toLocaleString()}`;
+      const meta = `${t(Lang.queryJS('landing.status.scheduled', 'scheduled'))} • ${new Date(s.starts_at).toLocaleString()} → ${new Date(s.ends_at).toLocaleString()}`;
       body.appendChild(renderListItem(s.name, meta, [], s.url));
     }
 
     // Empty state
     if (!body.children.length) {
-      body.appendChild(renderListItem('No active incidents', 'Everything looks good.'));
+      body.appendChild(
+        renderListItem(
+          t(Lang.queryJS('landing.status.empty.title', 'No active incidents')),
+          t(Lang.queryJS('landing.status.empty.subtitle', 'Everything looks good.'))
+        )
+      );
     }
   };
 
@@ -225,10 +284,15 @@ updateSelectedAccount(ConfigManager.getSelectedAccount());
     const title = document.querySelector(SELECTORS.title);
     const body = document.querySelector(SELECTORS.body);
     if (dot) dot.setAttribute('data-state', 'degraded');
-    if (title) title.textContent = 'Status unavailable';
+    if (title) title.textContent = t(Lang.queryJS('landing.status.error.title', 'Status unavailable'));
     if (body) {
       clear(body);
-      body.appendChild(renderListItem('Cannot reach status API', 'Please try again later.'));
+      body.appendChild(
+        renderListItem(
+          t(Lang.queryJS('landing.status.error.bodyTitle', 'Cannot reach status API')),
+          t(Lang.queryJS('landing.status.error.bodySubtitle', 'Please try again later.'))
+        )
+      );
     }
   };
 
@@ -244,9 +308,15 @@ updateSelectedAccount(ConfigManager.getSelectedAccount());
     }
   };
 
+  // Initial translated "loading" title
+  const initTitle = document.querySelector(SELECTORS.title);
+  if (initTitle) initTitle.textContent = t(Lang.queryJS('landing.status.loading', 'Loading status…'));
+
   // Initial load + refresh every 60s
   fetchAndRenderStatus();
   setInterval(fetchAndRenderStatus, 60_000);
 
+  // Optional manual refresh hook
   window.refreshStatus = fetchAndRenderStatus;
 })();
+
