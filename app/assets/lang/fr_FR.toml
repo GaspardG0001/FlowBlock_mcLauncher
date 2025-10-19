@@ -332,3 +332,54 @@ gameNotPurchasedTitle = "Erreur lors de la connexion :<br>Jeu non achete"
 gameNotPurchasedDesc = "Le compte avec lequel vous essayez de vous connecter n'a pas achete Minecraft Vous pouvez acheter une copie sur <a href=\"https://minecraftnet/\">Minecraftnet</a>"
 unknownErrorTitle = "Erreur inconnue lors de la connexion"
 unknownErrorDesc = "Une erreur inconnue est survenue Veuillez consulter la console pour plus de details"
+
+[js.landing.status]
+seeFullStatus = "Voir le statut complet"
+loading = "Chargement du statut…"
+updated = "mis à jour"
+inProgress = "en cours"
+started = "début"
+ends = "fin"
+scheduled = "planifiée"
+
+[js.landing.status.state]
+ok = "Tous les systèmes fonctionnent"
+degraded = "Performances dégradées"
+partial = "Panne partielle"
+down = "Panne majeure"
+maintenance = "Maintenance en cours"
+default = "Statut"
+
+[js.landing.status.incident]
+one = "incident"
+many = "incidents"
+
+[js.landing.status.maintenance]
+one = "maintenance"
+many = "maintenances"
+
+[js.landing.status.impact]
+fullOutage = "panne totale"
+partialOutage = "panne partielle"
+degradedPerformance = "performances dégradées"
+
+[js.landing.status.incidentStatus]
+identified = "identifié"
+investigating = "investigation"
+monitoring = "surveillance"
+
+[js.landing.status.time]
+justNow = "à l’instant"
+minSuffix = "min"
+hourSuffix = "h"
+daySuffix = "j"
+
+[js.landing.status.empty]
+title = "Aucun incident actif"
+subtitle = "Tout semble normal."
+
+[js.landing.status.error]
+title = "Statut indisponible"
+bodyTitle = "Impossible d’atteindre l’API de statut"
+bodySubtitle = "Réessayez plus tard."
+

@@ -1,9 +1,13 @@
+<link rel="stylesheet" href="../css/pages/landing.css">
+
 <div id="<%= __filename %>" class="main" style="display: none;">
     <div class="center">
         <div class="row">
             <button class="full primary" action="launchGame()">
                 <div class="name">
-                    <span><%= lang('landing.playButton') %></span>
+                    <span>
+                        <%= lang('landing.playButton') %>
+                    </span>
                     <div class="bg">
                         <svg xmlns="http://www.w3.org/2000/svg" version="1.2" viewBox="0 0 240 30" width="240"
                             height="30">
@@ -30,7 +34,9 @@
             <div class="column">
                 <button action="openSettings()">
                     <div class="name">
-                        <span><%= lang('landing.settingsButton') %></span>
+                        <span>
+                            <%= lang('landing.settingsButton') %>
+                        </span>
                         <div class="bg">
                             <svg xmlns="http://www.w3.org/2000/svg" version="1.2" viewBox="0 0 240 30" width="240"
                                 height="30">
@@ -42,7 +48,9 @@
                 </button>
                 <button class="danger" action="disconnect()">
                     <div class="name">
-                        <span><%= lang('landing.disconnectButton') %></span>
+                        <span>
+                            <%= lang('landing.disconnectButton') %>
+                        </span>
                         <div class="bg">
                             <svg xmlns="http://www.w3.org/2000/svg" version="1.2" viewBox="0 0 240 30" width="240"
                                 height="30">
@@ -52,6 +60,22 @@
                         </div>
                     </div>
                 </button>
+
+                <!-- Service Status Widget -->
+                <div id="statusWidget" class="status-widget">
+                    <div class="status-header">
+                        <span class="status-dot" data-state="ok"></span>
+                        <span id="statusTitle">Loading status…</span>
+                    </div>
+
+                    <div id="statusBody" class="status-body"></div>
+
+                    <div class="status-footer">
+                        <a id="statusLink" href="https://status.mcflowblock.com/" target="_blank" rel="noreferrer">See
+                            full status</a>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
