@@ -251,7 +251,7 @@ body, button, input, textarea {
 .loadingText {
     margin-top: 0;
     font-weight: 700;
-    font-size: 55px;
+    font-size: 180%;
 }
 
 .row {
