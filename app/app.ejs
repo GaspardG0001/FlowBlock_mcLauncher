@@ -32,9 +32,12 @@
     </head>
         <body bkid="<%= typeof bkid !== 'undefined' ? bkid : 'default' %>">
         <%- include('frame') %>
+
+        <!-- Gestion du chargement -->
         <div id="loading" class="main">
             <div class="center">
-                <img class="bigLogo" src="./assets/images/SealCircle.png">
+                <img class="bigLogo" src="https://mcflowblock.com/storage/img/logo-icon.png" alt="FlowBlock_mc icon"/>
+                <p class="loadingText">Chargement en cours...</p>
             </div>
         </div>
         <div id="main">
