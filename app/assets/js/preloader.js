@@ -47,11 +47,6 @@ async function validateMicrosoftAccount() {
         return true
     }
 
-    if(isDev) {
-        logger.info('Skipping account validation in development mode')
-        return true
-    }
-
     updateLoadingText(LangLoader.queryJS('preloader.validatingAccount'))
     logger.info('Validating Microsoft account...')
 
