@@ -222,10 +222,6 @@ function getCurrentView() {
 }
 
 async function main(data) {
-    if(!isDev) {
-        loggerAutoUpdater.info('Initializing..')
-        ipcRenderer.send('autoUpdateAction', 'initAutoUpdater', ConfigManager.getAllowPrerelease())
-    }
 
     await prepareSettings()
     updateSelectedServer(data.getServerById(ConfigManager.getSelectedServer()))
@@ -236,12 +232,6 @@ async function main(data) {
         $('#main').show()
 
         const isLoggedIn = Object.keys(ConfigManager.getAuthAccounts()).length > 0
-
-        // If this is enabled in a development environment we'll get ratelimited.
-        // The relaunch frequency is usually far too high.
-        if(!isDev && isLoggedIn) {
-            validateSelectedAccount()
-        }
 
         if(isLoggedIn) {
             switchView(getCurrentView(), VIEWS.landing, 500, 500)
