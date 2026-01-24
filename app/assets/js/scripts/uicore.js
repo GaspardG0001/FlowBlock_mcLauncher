@@ -229,21 +229,22 @@ async function main(data) {
 
     await prepareSettings()
     updateSelectedServer(data.getServerById(ConfigManager.getSelectedServer()))
-    //refreshServerStatus()
-    setTimeout(() => {
+    
+    setTimeout(async () => {
         document.getElementById('frameBar').style.backgroundColor = 'rgba(0, 0, 0, 0.5)'
         document.body.style.backgroundImage = `url('assets/images/backgrounds/${document.body.getAttribute('bkid')}')`
         $('#main').show()
 
         const isLoggedIn = Object.keys(ConfigManager.getAuthAccounts()).length > 0
 
-        // If this is enabled in a development environment we'll get ratelimited.
-        // The relaunch frequency is usually far too high.
-        if(!isDev && isLoggedIn) {
-            validateSelectedAccount()
-        }
-
         if(isLoggedIn) {
+            const isValid = await validateSelectedAccount()
+            if(isValid) {
+                switchView(getCurrentView(), VIEWS.landing, 500, 500)
+            } else {
+                switchView(getCurrentView(), VIEWS.login, 500, 500)
+            }
+        } else if(isLoggedIn) {
             switchView(getCurrentView(), VIEWS.landing, 500, 500)
         } else {
             switchView(getCurrentView(), VIEWS.login, 500, 500)

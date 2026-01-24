@@ -2,7 +2,7 @@ appId: 'mcflowblock'
 productName: 'FlowBlock_mc'
 artifactName: '${productName}-setup.${ext}'
 
-copyright: 'Copyright © 2025 FlowBlock_mc'
+copyright: 'Copyright © 2026 FlowBlock_mc'
 
 asar: true
 compression: 'maximum'

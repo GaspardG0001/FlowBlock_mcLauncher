@@ -581,28 +581,40 @@ function disconnect() {
     if(acc.type === 'microsoft') {
         const isLast = Object.keys(ConfigManager.getAuthAccounts()).length === 1
         ipcRenderer.send(MSFT_OPCODE.OPEN_LOGOUT, acc.uuid, isLast)
-        // La vue finale sera gérée dans le listener REPLY_LOGOUT.
     } else {
-        switchView(getCurrentView(), VIEWS.login, 500, 500, async () => {
-            await AuthManager.removeMojangAccount(acc.uuid)
+        AuthManager.removeMojangAccount(acc.uuid).then(() => {
+            switchView(getCurrentView(), VIEWS.login, 500, 500)
+        }).catch(err => {
+            msftLogoutLogger.error('Error during Mojang logout', err)
+            switchView(getCurrentView(), VIEWS.login, 500, 500)
         })
     }
 }
 
 ipcRenderer.on(MSFT_OPCODE.REPLY_LOGOUT, (_, ...arguments_) => {
     if(arguments_[0] === MSFT_REPLY_TYPE.ERROR) {
-        switchView(getCurrentView(), VIEWS.login, 500, 500, () => {
-            disconnect()
-            if(arguments_.length > 1 && arguments_[1] === MSFT_ERROR.NOT_FINISHED) {
-                msftLogoutLogger.info('Logout cancelled by user.')
-                return;
-            }
-        })
-    } else if(arguments_[0] === MSFT_REPLY_TYPE.SUCCESS) {
-        switchView(getCurrentView(), VIEWS.login, 500, 500, () => {
-            disconnect()
-        })
+        if(arguments_[1] === MSFT_ERROR.NOT_FINISHED) {
+            msftLogoutLogger.info('Logout cancelled by user.')
+            return;
+        }
+        msftLogoutLogger.error('Logout error:', arguments_[1])
     }
+    
+    switchView(getCurrentView(), VIEWS.login, 500, 500, () => {
+        const uuid = arguments_[1]
+        const isLastAccount = arguments_[2]
+        
+        if(uuid) {
+            AuthManager.removeMicrosoftAccount(uuid).then(() => {
+                msftLogoutLogger.info('Account removed successfully')
+                if(isLastAccount) {
+                    msftLogoutLogger.info('No accounts remaining')
+                }
+            }).catch(err => {
+                msftLogoutLogger.error('Error removing account:', err)
+            })
+        }
+    })
 })
 
 let loginOptionsCancellable = false
@@ -627,27 +639,26 @@ ipcRenderer.on(MSFT_OPCODE.REPLY_LOGIN, (_, ...arguments_) => {
     if(arguments_[0] === MSFT_REPLY_TYPE.ERROR) {
         switchView(getCurrentView(), VIEWS.login, 500, 500, () => {
             if(arguments_[1] === MSFT_ERROR.NOT_FINISHED) {
-                // User cancelled.
                 msftLoginLogger.info('Login cancelled by user.')
                 return;
             }
+            const errorMsg = arguments_[1] || 'Unknown error occurred during login'
+            msftLoginLogger.error('Login error:', errorMsg)
         })
     } else if(arguments_[0] === MSFT_REPLY_TYPE.SUCCESS) {
         const queryMap = arguments_[1]
 
-        // Error from request to Microsoft.
         if (Object.prototype.hasOwnProperty.call(queryMap, 'error')) {
             switchView(getCurrentView(), VIEWS.login, 500, 500, () => {
-                // TODO Dont know what these errors are. Just show them I guess.
-                // This is probably if you messed up the app registration with Azure.      
-                let error = queryMap.error // Error might be 'access_denied' ?
+                let error = queryMap.error
                 let errorDesc = queryMap.error_description
+                msftLoginLogger.error('Microsoft auth error:', error)
                 console.log('Error getting authCode, is Azure application registered correctly?')
                 console.log(error)
                 console.log(errorDesc)
                 console.log('Full query map: ', queryMap)
             })
-        } else {
+        } else if (Object.prototype.hasOwnProperty.call(queryMap, 'code')) {
             msftLoginLogger.info('Acquired authCode, proceeding with authentication.')
 
             const authCode = queryMap.code
@@ -657,13 +668,17 @@ ipcRenderer.on(MSFT_OPCODE.REPLY_LOGIN, (_, ...arguments_) => {
                     await prepareSettings()
                 })
             }).catch((displayableError) => {
-                if(isDisplayableError(displayableError)) {
-                    msftLoginLogger.error('Error while logging in.', displayableError)
-                } else {
-                    // Uh oh.
-                    msftLoginLogger.error('Unhandled error during login.', displayableError)
-                }
-                switchView(getCurrentView(), VIEWS.login, 500, 500)
+                switchView(getCurrentView(), VIEWS.login, 500, 500, () => {
+                    if(isDisplayableError(displayableError)) {
+                        msftLoginLogger.error('Error while logging in.', displayableError)
+                    } else {
+                        msftLoginLogger.error('Unhandled error during login.', displayableError)
+                    }
+                })
+            })
+        } else {
+            switchView(getCurrentView(), VIEWS.login, 500, 500, () => {
+                msftLoginLogger.error('Invalid response from Microsoft auth')
             })
         }
     }
